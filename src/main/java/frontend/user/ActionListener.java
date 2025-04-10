@@ -1,4 +1,4 @@
-package frontend;
+package frontend.user;
 
 public interface ActionListener
 {

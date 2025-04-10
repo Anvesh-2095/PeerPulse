@@ -5,6 +5,7 @@ import backend.DAO.UniversityDAO;
 import backend.DAO.UserAuthDAO;
 import backend.DAO.UserDAO;
 import backend.models.Transactions;
+import backend.models.University;
 import backend.models.User;
 import backend.models.UserAuth;
 import backend.session.SessionManager;
@@ -187,6 +188,17 @@ public class UserService
 				return "ERROR|User not found";
 			}
 			String university = user.getUniversity();
+
+			// Subtract student count from university
+			UniversityDAO universityDAO = new UniversityDAO();
+			University uni = universityDAO.findByName(university);
+			if (uni == null)
+			{
+				return "ERROR|University not found";
+			}
+			uni.setStudents(uni.getStudents() - 1);
+			universityDAO.update(uni);
+
 
 			// 1. Find all transactions made by this user
 			List<Transactions> userTransactions = transactionsDAO.findTransactionsBySender(username);

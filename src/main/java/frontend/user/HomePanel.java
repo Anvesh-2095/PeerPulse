@@ -1,12 +1,7 @@
-package frontend;
+package frontend.user;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
 
 public class HomePanel extends JPanel
 {

@@ -1,9 +1,8 @@
-package frontend;
+package frontend.user;
 
 import java.util.List;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -14,7 +13,7 @@ import java.util.UUID;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-public class Main implements frontend.ActionListener
+public class Main implements ActionListener
 {
 	DisplayFrame displayFrame;
 
