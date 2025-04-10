@@ -1,110 +1,228 @@
 package frontend;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class ViewProfilePanel extends JPanel
-{
-	ViewProfilePanel(ActionListener actionListener, String username, String name, String university, Date dob, Date dateJoined, int likes, char sex)
-	{
-		int age = 0;
-		// Calculate age from date of birth
-		if (dob != null)
-		{
-			Date currentDate = new Date();
-			age = currentDate.getYear() - dob.getYear();
-			if (currentDate.getMonth() < dob.getMonth() || (currentDate.getMonth() == dob.getMonth() && currentDate.getDate() < dob.getDate()))
-			{
-				age--;
-			}
-		}
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
 
-		// Set layout manager for the main panel
-		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-		setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+public class ViewProfilePanel extends JPanel {
+    // Custom colors
+    private static final Color BACKGROUND_COLOR = new Color(240, 242, 245);
+    private static final Color PANEL_COLOR = new Color(255, 255, 255);
+    private static final Color HEADER_COLOR = new Color(50, 120, 200);
+    private static final Color TEXT_COLOR = new Color(40, 40, 40);
+    private static final Color BUTTON_COLOR = new Color(60, 130, 210);
+    private static final Color BUTTON_TEXT_COLOR = Color.WHITE;
+    private static final Color HIGHLIGHT_COLOR = new Color(250, 90, 90);
+    
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM d, yyyy");
+    
+    ViewProfilePanel(ActionListener actionListener, String username, String name, String university, 
+                    Date dob, Date dateJoined, int likes, char sex) {
+        // Calculate age from date of birth
+        int age = calculateAge(dob);
 
-		// Create profile info panel with vertical BoxLayout
-		JPanel profileInfoPanel = new JPanel();
-		profileInfoPanel.setLayout(new BoxLayout(profileInfoPanel, BoxLayout.Y_AXIS));
-		profileInfoPanel.setBorder(BorderFactory.createTitledBorder("Profile Information"));
+        // Set up panel properties
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        setBorder(BorderFactory.createEmptyBorder(25, 25, 25, 25));
+        setBackground(BACKGROUND_COLOR);
 
-		// Add profile information with proper spacing
-		JLabel nameLabel = new JLabel("Name: " + name);
-		nameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		profileInfoPanel.add(nameLabel);
-		profileInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        // Create header panel with username and votes
+        JPanel headerPanel = createHeaderPanel(username, likes);
+        
+        // Create profile info panel
+        JPanel profileInfoPanel = createProfileInfoPanel(name, username, university, dob, age, dateJoined, sex);
+        
+        // Create button panel
+        JPanel buttonPanel = createButtonPanel(actionListener, username);
 
-		JLabel usernameLabel = new JLabel("Username: " + username);
-		usernameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		profileInfoPanel.add(usernameLabel);
-		profileInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        // Add panels to main panel
+        add(headerPanel);
+        add(Box.createRigidArea(new Dimension(0, 20)));
+        add(profileInfoPanel);
+        add(Box.createRigidArea(new Dimension(0, 20)));
+        add(buttonPanel);
+    }
+    
+    private int calculateAge(Date dob) {
+        if (dob == null) return 0;
+        
+        Date currentDate = new Date();
+        int age = currentDate.getYear() - dob.getYear();
+        if (currentDate.getMonth() < dob.getMonth() || 
+            (currentDate.getMonth() == dob.getMonth() && currentDate.getDate() < dob.getDate())) {
+            age--;
+        }
+        return age;
+    }
+    
+    private JPanel createHeaderPanel(String username, int likes) {
+        JPanel headerPanel = new JPanel();
+        headerPanel.setLayout(new BorderLayout());
+        headerPanel.setBackground(HEADER_COLOR);
+        headerPanel.setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20));
+        headerPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 80));
+        
+        // Username label with large font
+        JLabel usernameLabel = new JLabel("@" + username);
+        usernameLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        usernameLabel.setForeground(Color.WHITE);
+        
+        // Likes display with custom look
+        JPanel likesPanel = new JPanel();
+        likesPanel.setLayout(new BoxLayout(likesPanel, BoxLayout.Y_AXIS));
+        likesPanel.setBackground(HEADER_COLOR);
+        
+        JLabel likesValueLabel = new JLabel(String.valueOf(likes));
+        likesValueLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        likesValueLabel.setForeground(Color.WHITE);
+        likesValueLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        
+        JLabel likesTextLabel = new JLabel("LIKES");
+        likesTextLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+        likesTextLabel.setForeground(new Color(220, 220, 220));
+        likesTextLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        
+        likesPanel.add(likesValueLabel);
+        likesPanel.add(likesTextLabel);
+        
+        headerPanel.add(usernameLabel, BorderLayout.WEST);
+        headerPanel.add(likesPanel, BorderLayout.EAST);
+        
+        return headerPanel;
+    }
+    
+    private JPanel createProfileInfoPanel(String name, String username, String university, 
+                                        Date dob, int age, Date dateJoined, char sex) {
+        JPanel profileInfoPanel = new JPanel();
+        profileInfoPanel.setLayout(new BoxLayout(profileInfoPanel, BoxLayout.Y_AXIS));
+        profileInfoPanel.setBackground(PANEL_COLOR);
+        
+        // Create a compound border with rounded corners and title
+        TitledBorder titledBorder = BorderFactory.createTitledBorder("Profile Information");
+        titledBorder.setTitleFont(new Font("Arial", Font.BOLD, 14));
+        titledBorder.setTitleColor(HEADER_COLOR);
+        
+        Border emptyBorder = new EmptyBorder(15, 15, 15, 15);
+        CompoundBorder compoundBorder = new CompoundBorder(titledBorder, emptyBorder);
+        profileInfoPanel.setBorder(compoundBorder);
+        
+        // Add profile information with proper spacing and styling
+        addProfileField(profileInfoPanel, "Name", name);
+        addProfileField(profileInfoPanel, "Username", username);
+        addProfileField(profileInfoPanel, "University", university);
+        addProfileField(profileInfoPanel, "Date of Birth", dob != null ? dateFormat.format(dob) : "N/A");
+        addProfileField(profileInfoPanel, "Age", String.valueOf(age));
+        addProfileField(profileInfoPanel, "Date Joined", dateJoined != null ? dateFormat.format(dateJoined) : "N/A");
+        addProfileField(profileInfoPanel, "Sex", String.valueOf(sex));
+        
+        return profileInfoPanel;
+    }
+    
+    private void addProfileField(JPanel panel, String label, String value) {
+        JPanel fieldPanel = new JPanel(new BorderLayout());
+        fieldPanel.setBackground(PANEL_COLOR);
+        fieldPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35));
+        
+        JLabel fieldLabel = new JLabel(label + ":");
+        fieldLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        fieldLabel.setForeground(TEXT_COLOR);
+        fieldLabel.setPreferredSize(new Dimension(120, 25));
+        
+        JLabel fieldValue = new JLabel(value);
+        fieldValue.setFont(new Font("Arial", Font.PLAIN, 14));
+        fieldValue.setForeground(TEXT_COLOR);
+        
+        fieldPanel.add(fieldLabel, BorderLayout.WEST);
+        fieldPanel.add(fieldValue, BorderLayout.CENTER);
+        
+        panel.add(fieldPanel);
+        panel.add(Box.createRigidArea(new Dimension(0, 5)));
+    }
+    
+    private JPanel createButtonPanel(ActionListener actionListener, String username) {
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new GridLayout(2, 2, 10, 10));
+        buttonPanel.setBackground(PANEL_COLOR);
+        
+        // Create a compound border with rounded corners and title
+        TitledBorder titledBorder = BorderFactory.createTitledBorder("Actions");
+        titledBorder.setTitleFont(new Font("Arial", Font.BOLD, 14));
+        titledBorder.setTitleColor(HEADER_COLOR);
+        
+        Border emptyBorder = new EmptyBorder(15, 15, 15, 15);
+        CompoundBorder compoundBorder = new CompoundBorder(titledBorder, emptyBorder);
+        buttonPanel.setBorder(compoundBorder);
+        
+        // Create styled buttons
+        JButton upvoteButton = createStyledButton("Upvote", BUTTON_COLOR);
+        upvoteButton.addActionListener(e -> actionListener.onActionPerformed("upvote", username));
+        
+        JButton downvoteButton = createStyledButton("Downvote", HIGHLIGHT_COLOR);
+        downvoteButton.addActionListener(e -> actionListener.onActionPerformed("downvote", username));
+        
+        JButton removeVoteButton = createStyledButton("Remove Vote", new Color(150, 150, 150));
+        removeVoteButton.addActionListener(e -> actionListener.onActionPerformed("removeVote", username));
+        
+        JButton backButton = createStyledButton("Back", new Color(100, 100, 100));
+        backButton.addActionListener(e -> actionListener.onActionPerformed("back"));
+        
+        buttonPanel.add(upvoteButton);
+        buttonPanel.add(downvoteButton);
+        buttonPanel.add(removeVoteButton);
+        buttonPanel.add(backButton);
+        
+        return buttonPanel;
+    }
+    
+    private JButton createStyledButton(String text, Color backgroundColor) {
+        JButton button = new JButton(text);
+        button.setFont(new Font("Arial", Font.BOLD, 14));
+        button.setBackground(backgroundColor);
+        button.setForeground(BUTTON_TEXT_COLOR);
+        button.setFocusPainted(false);
+        button.setBorderPainted(false);
+        button.setOpaque(true);
+        
+        // Add hover effect
+        button.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                button.setBackground(backgroundColor.brighter());
+            }
+            
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                button.setBackground(backgroundColor);
+            }
+        });
+        
+        return button;
+    }
+    
+    public void onActionPerformed(String action, String... params) {
+        switch (action) {
+            case "showHome":
+                showHomePanel();
+                break;
+            // Add other cases as needed
+        }
+    }
 
-		JLabel universityLabel = new JLabel("University: " + university);
-		universityLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		profileInfoPanel.add(universityLabel);
-		profileInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-
-		JLabel dobLabel = new JLabel("Date of Birth: " + (dob != null ? dob.toString() : "N/A"));
-		dobLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		profileInfoPanel.add(dobLabel);
-		profileInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-
-		JLabel ageLabel = new JLabel("Age: " + age);
-		ageLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		profileInfoPanel.add(ageLabel);
-		profileInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-
-		JLabel dateJoinedLabel = new JLabel("Date Joined: " + (dateJoined != null ? dateJoined.toString() : "N/A"));
-		dateJoinedLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		profileInfoPanel.add(dateJoinedLabel);
-		profileInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-
-		JLabel likesLabel = new JLabel("Likes: " + likes);
-		likesLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		profileInfoPanel.add(likesLabel);
-		profileInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-
-		JLabel sexLabel = new JLabel("Sex: " + sex);
-		sexLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		profileInfoPanel.add(sexLabel);
-
-		// Create button panel with vertical BoxLayout
-		JPanel buttonPanel = new JPanel();
-		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
-		buttonPanel.setBorder(BorderFactory.createTitledBorder("Actions"));
-
-		// Add buttons with proper spacing
-		JButton upvoteButton = new JButton("Upvote");
-		upvoteButton.setAlignmentX(Component.LEFT_ALIGNMENT);
-		upvoteButton.setMaximumSize(new Dimension(150, 30));
-		upvoteButton.addActionListener(e -> actionListener.onActionPerformed("upvote", username));
-		buttonPanel.add(upvoteButton);
-		buttonPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-
-		JButton downvoteButton = new JButton("Downvote");
-		downvoteButton.setAlignmentX(Component.LEFT_ALIGNMENT);
-		downvoteButton.setMaximumSize(new Dimension(150, 30));
-		downvoteButton.addActionListener(e -> actionListener.onActionPerformed("downvote", username));
-		buttonPanel.add(downvoteButton);
-		buttonPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-
-		JButton removeVoteButton = new JButton("Remove Vote");
-		removeVoteButton.setAlignmentX(Component.LEFT_ALIGNMENT);
-		removeVoteButton.setMaximumSize(new Dimension(150, 30));
-		removeVoteButton.addActionListener(e -> actionListener.onActionPerformed("removeVote", username));
-		buttonPanel.add(removeVoteButton);
-		buttonPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-
-		JButton backButton = new JButton("Back");
-		backButton.setAlignmentX(Component.LEFT_ALIGNMENT);
-		backButton.setMaximumSize(new Dimension(150, 30));
-		backButton.addActionListener(e -> actionListener.onActionPerformed("back", ""));
-		buttonPanel.add(backButton);
-
-		// Add both panels to this panel
-		add(profileInfoPanel);
-		add(Box.createRigidArea(new Dimension(0, 20)));
-		add(buttonPanel);
-	}
+    private void showHomePanel() {
+        // Implementation for showing the home panel
+    }
 }

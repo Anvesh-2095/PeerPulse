@@ -9,7 +9,7 @@ public class UniversityDAO
 {
 	private static final String URL = "jdbc:mysql://localhost:3306/peerpulse";
 	private static final String USERNAME = "root";
-	private static final String PASSWORD = "anvesh20";
+	private static final String PASSWORD = "1234";
 
 	public Connection getConnection() throws SQLException
 	{

@@ -1,122 +1,118 @@
 package frontend;
 
-import javax.imageio.ImageIO;
-import javax.swing.*;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.geom.RoundRectangle2D;
 
-public class HomePanel extends JPanel
-{
-	public HomePanel(ActionListener actionListener, String fetchedUsername, String fetchedName, int upvoteCount)
-	{
-		// Set layout manager for the main panel
-		setLayout(new BorderLayout(10, 10));
-		setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-		
-		// Create profile info panel with vertical BoxLayout
-		JPanel profileInfoPanel = new JPanel();
-		profileInfoPanel.setLayout(new BoxLayout(profileInfoPanel, BoxLayout.Y_AXIS));
-		
-		// Add profile information with proper spacing
-		JLabel name = new JLabel("Name: " + fetchedName);
-		name.setAlignmentX(Component.LEFT_ALIGNMENT);
-		profileInfoPanel.add(name);
-		profileInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-		
-		JLabel username = new JLabel("Username: " + fetchedUsername);
-		username.setAlignmentX(Component.LEFT_ALIGNMENT);
-		profileInfoPanel.add(username);
-		profileInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-		
-		JLabel upvotes = new JLabel("Upvotes: " + upvoteCount);
-		upvotes.setAlignmentX(Component.LEFT_ALIGNMENT);
-		profileInfoPanel.add(upvotes);
-		profileInfoPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-		
-		// Create button panel with vertical BoxLayout
-		JPanel buttonPanel = new JPanel();
-		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
 
-		// Add buttons with proper spacing
-		JButton viewProfileButton = new JButton("View Profile");
-		viewProfileButton.setAlignmentX(Component.LEFT_ALIGNMENT);
-		viewProfileButton.setMaximumSize(new Dimension(150, 30));
-		viewProfileButton.addActionListener(e -> actionListener.onActionPerformed("viewProfile", fetchedUsername));
-		buttonPanel.add(viewProfileButton);
-		buttonPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+import frontend.components.ModernButton;
+import frontend.theme.ModernTheme;
 
-		// Add the new "View My Profile" button
-//		JButton viewMyProfileButton = new JButton("View My Profile");
-//		viewMyProfileButton.setAlignmentX(Component.LEFT_ALIGNMENT);
-//		viewMyProfileButton.setMaximumSize(new Dimension(150, 30));
-//		viewMyProfileButton.addActionListener(e -> actionListener.onActionPerformed("viewMyProfile", fetchedUsername));
-//		buttonPanel.add(viewMyProfileButton);
-//		buttonPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+public class HomePanel extends JPanel {
+    public HomePanel(ActionListener actionListener, String fetchedUsername, String fetchedName, int upvoteCount) {
+        setLayout(new BorderLayout(ModernTheme.SPACING, ModernTheme.SPACING));
+        setBackground(ModernTheme.BACKGROUND);
+        setBorder(BorderFactory.createEmptyBorder(32, 32, 32, 32));
 
-		JButton viewMyProfileButton = new JButton("View My Profile");
-		viewMyProfileButton.setAlignmentX(Component.LEFT_ALIGNMENT);
-		viewMyProfileButton.setMaximumSize(new Dimension(150, 30));
-		viewMyProfileButton.addActionListener(e -> actionListener.onActionPerformed("viewMyProfile"));
-		buttonPanel.add(viewMyProfileButton);
-		buttonPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        // Profile Card
+        JPanel profileCard = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(ModernTheme.SURFACE);
+                g2.fill(new RoundRectangle2D.Float(0, 0, getWidth(), getHeight(),
+                        ModernTheme.BORDER_RADIUS, ModernTheme.BORDER_RADIUS));
+                g2.dispose();
+            }
+        };
+        profileCard.setLayout(new BoxLayout(profileCard, BoxLayout.Y_AXIS));
+        profileCard.setBackground(ModernTheme.SURFACE);
+        profileCard.setBorder(BorderFactory.createCompoundBorder(
+            new EmptyBorder(24, 24, 24, 24),
+            BorderFactory.createLineBorder(ModernTheme.BORDER, 1, true)
+        ));
 
-		JButton upvoteButton = new JButton("Upvote");
-		upvoteButton.setAlignmentX(Component.LEFT_ALIGNMENT);
-		upvoteButton.setMaximumSize(new Dimension(150, 30));
-		upvoteButton.addActionListener(e -> actionListener.onActionPerformed("upvote", fetchedUsername));
-		buttonPanel.add(upvoteButton);
-		buttonPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-		
-		JButton downvoteButton = new JButton("Downvote");
-		downvoteButton.setAlignmentX(Component.LEFT_ALIGNMENT);
-		downvoteButton.setMaximumSize(new Dimension(150, 30));
-		downvoteButton.addActionListener(e -> actionListener.onActionPerformed("downvote", fetchedUsername));
-		buttonPanel.add(downvoteButton);
-		buttonPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-		
-		JButton nextButton = new JButton("Next");
-		nextButton.setAlignmentX(Component.LEFT_ALIGNMENT);
-		nextButton.setMaximumSize(new Dimension(150, 30));
-		nextButton.addActionListener(e -> actionListener.onActionPerformed("next"));
-		buttonPanel.add(nextButton);
+        // Profile Header
+        JLabel headerLabel = new JLabel("Profile Information");
+        headerLabel.setFont(ModernTheme.HEADING);
+        headerLabel.setForeground(ModernTheme.TEXT_PRIMARY);
+        headerLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        profileCard.add(headerLabel);
+        profileCard.add(Box.createRigidArea(new Dimension(0, ModernTheme.SPACING)));
 
-		// Add "Delete My Profile" button at the bottom
-		JButton deleteProfileButton = new JButton("Delete My Profile");
-		deleteProfileButton.setAlignmentX(Component.LEFT_ALIGNMENT);
-		deleteProfileButton.setMaximumSize(new Dimension(150, 30));
-		deleteProfileButton.setForeground(Color.RED);
-		deleteProfileButton.addActionListener(e -> actionListener.onActionPerformed("deleteProfile"));
-		buttonPanel.add(Box.createRigidArea(new Dimension(0, 20))); // Add extra space
-		buttonPanel.add(deleteProfileButton);
+        // Profile Details
+        addProfileDetail(profileCard, "Name", fetchedName);
+        addProfileDetail(profileCard, "Username", fetchedUsername);
+        addProfileDetail(profileCard, "Upvotes", String.valueOf(upvoteCount));
+        profileCard.add(Box.createRigidArea(new Dimension(0, ModernTheme.SPACING * 2)));
 
+        // Buttons Panel
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
+        buttonPanel.setOpaque(false);
 
-		// Create a container panel to hold both profileInfoPanel and buttonPanel
-		JPanel containerPanel = new JPanel();
-		containerPanel.setLayout(new BoxLayout(containerPanel, BoxLayout.Y_AXIS));
-		containerPanel.add(profileInfoPanel);
-		containerPanel.add(buttonPanel);
-		
-		// Add the container panel to the center of the main panel
-		add(containerPanel, BorderLayout.CENTER);
+        // Action Buttons
+  ModernButton viewProfileBtn = new ModernButton("View Profile", ModernTheme.PRIMARY, ModernTheme.PRIMARY_HOVER);
+        viewProfileBtn.addActionListener(e -> actionListener.onActionPerformed("viewProfile", fetchedUsername));
+        
+        ModernButton upvoteBtn = new ModernButton("Upvote", ModernTheme.PRIMARY, ModernTheme.PRIMARY_HOVER);
+        upvoteBtn.addActionListener(e -> actionListener.onActionPerformed("upvote", fetchedUsername));
+        
+        ModernButton downvoteBtn = new ModernButton("Downvote", ModernTheme.PRIMARY, ModernTheme.PRIMARY_HOVER);
+        downvoteBtn.addActionListener(e -> actionListener.onActionPerformed("downvote", fetchedUsername));
+        
+        ModernButton nextBtn = new ModernButton("Next Profile", ModernTheme.PRIMARY, ModernTheme.PRIMARY_HOVER);
+        nextBtn.addActionListener(e -> actionListener.onActionPerformed("next"));
+        
+        ModernButton deleteBtn = new ModernButton("Delete Profile", ModernTheme.DANGER, 
+                new Color(ModernTheme.DANGER.getRed() - 20, ModernTheme.DANGER.getGreen() - 20, ModernTheme.DANGER.getBlue() - 20));
 
-		// Uncomment and fix the image code when you have images ready
-		/*
-		try
-		{
-			InputStream imageStream = getClass().getResourceAsStream("/Images/DemoFemale.png");
-			assert imageStream != null;
-			BufferedImage image = ImageIO.read(imageStream);
-			JLabel profilePicture = new JLabel(new ImageIcon(image));
-			profilePicture.setPreferredSize(new Dimension(100, 100));
-			add(profilePicture, BorderLayout.WEST);
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-		*/
-	}
+        // Add buttons with spacing
+        buttonPanel.add(viewProfileBtn);
+        buttonPanel.add(Box.createRigidArea(new Dimension(0, ModernTheme.SPACING)));
+        buttonPanel.add(upvoteBtn);
+        buttonPanel.add(Box.createRigidArea(new Dimension(0, ModernTheme.SPACING)));
+        buttonPanel.add(downvoteBtn);
+        buttonPanel.add(Box.createRigidArea(new Dimension(0, ModernTheme.SPACING)));
+        buttonPanel.add(nextBtn);
+        buttonPanel.add(Box.createRigidArea(new Dimension(0, ModernTheme.SPACING )));
+        buttonPanel.add(deleteBtn);
+
+        profileCard.add(buttonPanel);
+        add(profileCard, BorderLayout.CENTER);
+    }
+
+    private void addProfileDetail(JPanel panel, String label, String value) {
+        JPanel detailPanel = new JPanel();
+        detailPanel.setLayout(new BoxLayout(detailPanel, BoxLayout.Y_AXIS));
+        detailPanel.setOpaque(false);
+        detailPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        JLabel labelText = new JLabel(label);
+        labelText.setFont(ModernTheme.BODY);
+        labelText.setForeground(ModernTheme.TEXT_SECONDARY);
+        
+        JLabel valueText = new JLabel(value);
+        valueText.setFont(ModernTheme.TITLE);
+        valueText.setForeground(ModernTheme.TEXT_PRIMARY);
+
+        detailPanel.add(labelText);
+        detailPanel.add(Box.createRigidArea(new Dimension(0, 4)));
+        detailPanel.add(valueText);
+        detailPanel.add(Box.createRigidArea(new Dimension(0, ModernTheme.SPACING)));
+
+        panel.add(detailPanel);
+    }
 }
