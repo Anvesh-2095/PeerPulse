@@ -120,7 +120,7 @@ public class ViewMyProfile extends JPanel
 		JButton backButton = new JButton("Back");
 		backButton.setAlignmentX(Component.LEFT_ALIGNMENT);
 		backButton.setMaximumSize(new Dimension(150, 30));
-		backButton.addActionListener(e -> actionListener.onActionPerformed("back", ""));
+		backButton.addActionListener(e -> actionListener.onActionPerformed("back"));
 		buttonPanel.add(backButton);
 
 		// Add both panels to this panel

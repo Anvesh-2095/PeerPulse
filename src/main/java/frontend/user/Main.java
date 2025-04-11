@@ -481,6 +481,16 @@ public class Main implements ActionListener
 				}
 			}).start();
 		}
+		else if (action.equals("back"))
+		{
+			System.out.println("back");
+			displayFrame.getContentPane().removeAll();
+			displayFrame.revalidate();
+			HomePanel homePanel = new HomePanel(this, currentSessionUserName, currentSessionUserName, 0);
+			displayFrame.add(homePanel);
+			displayFrame.revalidate();
+			displayFrame.repaint();
+		}
 		else
 		{
 			System.out.println("Unknown action: " + action);
