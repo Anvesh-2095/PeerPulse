@@ -189,16 +189,6 @@ public class UserService
 			}
 			String university = user.getUniversity();
 
-			// Subtract student count from university
-			UniversityDAO universityDAO = new UniversityDAO();
-			University uni = universityDAO.findByName(university);
-			if (uni == null)
-			{
-				return "ERROR|University not found";
-			}
-			uni.setStudents(uni.getStudents() - 1);
-			universityDAO.update(uni);
-
 
 			// 1. Find all transactions made by this user
 			List<Transactions> userTransactions = transactionsDAO.findTransactionsBySender(username);

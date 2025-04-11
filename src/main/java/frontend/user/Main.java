@@ -631,7 +631,7 @@ public class Main implements ActionListener
 			// Move profile view operation to a background thread
 			new Thread(() ->
 			{
-				out.println("GET_PROFILE|" + uuid + "|" + currentSessionUserName + "|" + username);
+				out.println("GET_PROFILE|" + uuid + "|" + username);
 				try
 				{
 					final String serverResponse = in.readLine();
